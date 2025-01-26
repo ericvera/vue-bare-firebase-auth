@@ -4,11 +4,11 @@ import { getFirebaseErrorCode } from './internal/getFirebaseErrorCode.js'
 
 export enum RecoverEmailError {
   /**
-   * Thrown if the verify email code has expired.
+   * Thrown if the recover email code has expired.
    */
   ExpiredActionCode = 'auth/expired-action-code',
   /**
-   * Thrown if the verify email code is invalid. This can happen if the code is
+   * Thrown if the recover email code is invalid. This can happen if the code is
    * malformed or has already been used.
    */
   InvalidActionCode = 'auth/invalid-action-code',

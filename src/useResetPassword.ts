@@ -2,10 +2,14 @@ import { readonly, ref } from 'vue'
 import { getFirebaseErrorCode } from './internal/getFirebaseErrorCode.js'
 
 export enum ResetPasswordError {
-  // Thrown if the verify email code has expired.
+  /**
+   * Thrown if the reset password code has expired.
+   */
   ExpiredActionCode = 'auth/expired-action-code',
-  // Thrown if the verify email code is invalid. This can happen if the code is
-  // malformed or has already been used.
+  /**
+   * Thrown if the reset password code is invalid. This can happen if the code is
+   * malformed or has already been used.
+   */
   InvalidActionCode = 'auth/invalid-action-code',
 }
 
