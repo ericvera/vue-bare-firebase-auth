@@ -1,5 +1,5 @@
 import type { ActionCodeInfo } from 'firebase/auth'
-import { ref } from 'vue'
+import { readonly, ref } from 'vue'
 import { getFirebaseErrorCode } from './internal/getFirebaseErrorCode.js'
 
 export enum RecoverEmailError {
@@ -88,7 +88,7 @@ export const useRecoverEmail = ({ onError }: UseRecoverEmailParam) => {
   }
 
   return {
-    state,
+    state: readonly(state),
     handleRecoverEmail,
   }
 }
