@@ -1,5 +1,5 @@
 {
-  "name": "i-forgot-to-rename-my-package",
+  "name": "vue-bare-firebase-auth",
   "version": "0.0.1",
   "type": "module",
   "exports": {
@@ -17,30 +17,33 @@
   "scripts": {
     "build": "tsc --build",
     "lint": "eslint .",
-    "test": "vitest run",
-    "smoke": "yarn build && yarn lint && yarn test",
-    "docs": "typedoc && prettier --ignore-unknown --write docs/",
+    "smoke": "yarn build && yarn lint",
     "-- PRE-COMMIT HOOKS --": "",
     "localAfterInstall": "husky || true",
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable"
   },
   "packageManager": "yarn@4.6.0",
+  "peerDependencies": {
+    "firebase": "^11.10.0",
+    "pinia": "^2.1.0",
+    "vue": "^3.5.0"
+  },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
     "@tsconfig/strictest": "^2.0.5",
     "@types/node": "^22.10.10",
+    "@vitejs/plugin-vue": "^5.2.1",
     "eslint": "^9.19.0",
     "husky": "^9.1.7",
-    "is-ci": "^4.1.0",
     "lint-staged": "^15.4.2",
     "pinst": "^3.0.0",
     "prettier": "^3.4.2",
-    "typedoc": "^0.27.6",
-    "typedoc-plugin-markdown": "^4.4.1",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.21.0",
-    "vitest": "^3.0.4"
+    "vite": "^6.0.11",
+    "vite-plugin-dts": "^4.5.0",
+    "vue": "^3.5.13"
   },
   "prettier": {
     "tabWidth": 2,
@@ -49,9 +52,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/user/i-forgot-to-rename-my-package"
+    "url": "https://github.com/ericvera/vue-bare-firebase-auth"
   },
-  "keywords": [],
+  "keywords": [
+    "vue",
+    "firebase",
+    "auth",
+    "authentication"
+  ],
   "license": "MIT",
   "lint-staged": {
     "*.{ts,tsx,mjs}": "eslint --cache",
