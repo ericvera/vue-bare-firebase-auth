@@ -1,4 +1,6 @@
 export * from './constants.js'
+export * from './initFirebase.js'
+export * from './types.js'
 export * from './useAuthStore.js'
 export * from './useRecoverEmail.js'
 export * from './useResetPassword.js'
