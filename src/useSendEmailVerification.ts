@@ -2,11 +2,12 @@ import { storeToRefs } from 'pinia'
 import { readonly, ref, watch } from 'vue'
 import { useAuthStore } from 'vue-bare-firebase-auth'
 
-type SendEmailVerificationResult = 'link-sent' | 'already-verified' | undefined
+type SendEmailVerificationResult = 'link-sent' | 'email-verified' | undefined
 
 interface SendEmailVerificationState {
   loaded: boolean
   submitting: boolean
+  email: string | undefined
   result: SendEmailVerificationResult
 }
 
@@ -26,6 +27,7 @@ export const useSendEmailVerification = ({
   const state = ref<SendEmailVerificationState>({
     loaded: false,
     submitting: false,
+    email: undefined,
     result: undefined,
   })
 
@@ -73,6 +75,7 @@ export const useSendEmailVerification = ({
       loaded: false,
       submitting: false,
       result: undefined,
+      email: undefined,
     }
   }
 
@@ -89,8 +92,9 @@ export const useSendEmailVerification = ({
       state.value = {
         ...state.value,
         loaded: true,
+        email: authState.value.user?.email ?? undefined,
         result: authState.value.user?.emailVerified
-          ? 'already-verified'
+          ? 'email-verified'
           : undefined,
       }
     },
