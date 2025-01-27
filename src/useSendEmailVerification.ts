@@ -68,12 +68,23 @@ export const useSendEmailVerification = ({
     }
   }
 
+  const reset = () => {
+    state.value = {
+      loaded: false,
+      submitting: false,
+      result: undefined,
+    }
+  }
+
   watch(
     [authState, state],
-    () => {
+    async () => {
       if (state.value.loaded || !authState.value.loaded) {
         return
       }
+
+      // Ensure user is reloaded to get latest email verification status.
+      await authState.value.user?.reload()
 
       state.value = {
         ...state.value,
@@ -89,5 +100,6 @@ export const useSendEmailVerification = ({
   return {
     state: readonly(state),
     sendEmailVerification,
+    reset,
   }
 }
