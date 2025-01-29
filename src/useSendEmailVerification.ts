@@ -1,6 +1,6 @@
 import { storeToRefs } from 'pinia'
 import { readonly, ref, watch } from 'vue'
-import { useAuthStore } from 'vue-bare-firebase-auth'
+import { useAuthStore } from './useAuthStore.js'
 
 type SendEmailVerificationResult = 'link-sent' | 'email-verified' | undefined
 
