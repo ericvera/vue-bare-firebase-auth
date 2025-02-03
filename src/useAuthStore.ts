@@ -1,6 +1,6 @@
 import type { User } from 'firebase/auth'
 import { defineStore } from 'pinia'
-import { computed, onUnmounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 
 /**
  * State interface for the authentication store
@@ -53,11 +53,6 @@ export const useAuthStore = <TClaims extends object = object>() =>
 
     void init()
 
-    // Clean up subscription on component unmount
-    onUnmounted(() => {
-      unsubscribe.value?.()
-    })
-
     /**
      * Waits for the auth store to be loaded
      * @param milliseconds - Maximum time to wait in milliseconds
@@ -93,11 +88,22 @@ export const useAuthStore = <TClaims extends object = object>() =>
       await signOut(getAuth())
     }
 
+    const unload = () => {
+      unsubscribe.value?.()
+
+      state.value = {
+        user: undefined,
+        claims: {} as TClaims,
+        loaded: false,
+      }
+    }
+
     return {
       state,
       isLoggedIn,
       waitUntilLoaded,
       refreshToken,
       signOut,
+      unload,
     }
   })()
