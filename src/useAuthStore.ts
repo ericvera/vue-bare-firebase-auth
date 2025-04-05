@@ -12,6 +12,8 @@ interface State<TClaims extends object = object> {
   claims: TClaims
   /** Whether the initial auth state has been loaded */
   loaded: boolean
+  /** Last error that occurred in the store */
+  error: Error | null
 }
 
 const storeId = 'vue-bare-firebase-auth-store'
@@ -28,27 +30,39 @@ export const useAuthStore = <TClaims extends object = object>() =>
       user: undefined,
       claims: {} as TClaims,
       loaded: false,
+      error: null,
     })
 
     const isLoggedIn = computed(() => state.value.user !== undefined)
 
     const init = async () => {
-      const { getAuth, onIdTokenChanged } = await import('firebase/auth')
+      try {
+        const { getAuth, onIdTokenChanged } = await import('firebase/auth')
 
-      const updateAuthState = async (updatedUser: User | null) => {
-        const claims = ((await updatedUser?.getIdTokenResult())?.claims ??
-          {}) as TClaims
+        const updateAuthState = async (updatedUser: User | null) => {
+          try {
+            const claims = ((await updatedUser?.getIdTokenResult())?.claims ??
+              {}) as TClaims
 
-        state.value = {
-          user: updatedUser ?? undefined,
-          claims,
-          loaded: true,
+            state.value = {
+              user: updatedUser ?? undefined,
+              claims,
+              loaded: true,
+              error: null,
+            }
+          } catch (error) {
+            state.value.error =
+              error instanceof Error ? error : new Error(String(error))
+          }
         }
-      }
 
-      unsubscribe.value = onIdTokenChanged(getAuth(), (updatedUser) => {
-        void updateAuthState(updatedUser)
-      })
+        unsubscribe.value = onIdTokenChanged(getAuth(), (updatedUser) => {
+          void updateAuthState(updatedUser)
+        })
+      } catch (error) {
+        state.value.error =
+          error instanceof Error ? error : new Error(String(error))
+      }
     }
 
     void init()
@@ -59,23 +73,39 @@ export const useAuthStore = <TClaims extends object = object>() =>
      * @throws Error if store is not loaded within the timeout period
      */
     const waitUntilLoaded = async (milliseconds: number = 60000) => {
-      for (let i = 0; i < milliseconds / 10; i++) {
-        if (state.value.loaded) {
-          return
+      try {
+        for (let i = 0; i < milliseconds / 10; i++) {
+          if (state.value.loaded) {
+            return
+          }
+
+          await new Promise((resolve) => setTimeout(resolve, 10))
         }
 
-        await new Promise((resolve) => setTimeout(resolve, 10))
+        const error = new Error(
+          'Auth store not loaded within the timeout period',
+        )
+        state.value.error = error
+        throw error
+      } catch (error) {
+        state.value.error =
+          error instanceof Error ? error : new Error(String(error))
+        throw error
       }
-
-      throw new Error('Auth store not loaded within the timeout period')
     }
 
     /**
      * Forces a refresh of the user's ID token
      */
     const refreshToken = async () => {
-      if (state.value.user) {
-        await state.value.user.getIdToken(true)
+      try {
+        if (state.value.user) {
+          await state.value.user.getIdToken(true)
+        }
+      } catch (error) {
+        state.value.error =
+          error instanceof Error ? error : new Error(String(error))
+        throw error
       }
     }
 
@@ -83,18 +113,37 @@ export const useAuthStore = <TClaims extends object = object>() =>
      * Signs out the current user
      */
     const signOut = async () => {
-      const { getAuth, signOut } = await import('firebase/auth')
+      try {
+        const { getAuth, signOut } = await import('firebase/auth')
+        await signOut(getAuth())
+        state.value.error = null
+      } catch (error) {
+        state.value.error =
+          error instanceof Error ? error : new Error(String(error))
+        throw error
+      }
+    }
 
-      await signOut(getAuth())
+    /**
+     * Clears the current error
+     */
+    const clearError = () => {
+      state.value.error = null
     }
 
     const unload = () => {
-      unsubscribe.value?.()
+      try {
+        unsubscribe.value?.()
 
-      state.value = {
-        user: undefined,
-        claims: {} as TClaims,
-        loaded: false,
+        state.value = {
+          user: undefined,
+          claims: {} as TClaims,
+          loaded: false,
+          error: null,
+        }
+      } catch (error) {
+        state.value.error =
+          error instanceof Error ? error : new Error(String(error))
       }
     }
 
@@ -105,5 +154,6 @@ export const useAuthStore = <TClaims extends object = object>() =>
       refreshToken,
       signOut,
       unload,
+      clearError,
     }
   })()
