@@ -1,6 +1,7 @@
 import type { User } from 'firebase/auth'
 import { defineStore } from 'pinia'
 import { computed, readonly, ref, watch } from 'vue'
+import { AuthStoreError, AuthStoreErrorCode } from './errors/index.js'
 
 interface AuthState {
   user: User | null
@@ -52,9 +53,23 @@ export const useAuthStore = defineStore('auth', () => {
           }
         }
       } catch (err) {
+        let error: Error
+
+        if (err instanceof Error) {
+          // Convert Firebase auth errors to our custom AuthStoreError
+          if ('code' in err && typeof err.code === 'string') {
+            // Preserve Firebase error codes
+            error = new AuthStoreError(err.message, err.code)
+          } else {
+            error = new AuthStoreError(err.message, AuthStoreErrorCode.Unknown)
+          }
+        } else {
+          error = new AuthStoreError(String(err), AuthStoreErrorCode.Unknown)
+        }
+
         state.value = {
           ...state.value,
-          error: err instanceof Error ? err : new Error(String(err)),
+          error,
         }
       }
     }
@@ -87,7 +102,12 @@ export const useAuthStore = defineStore('auth', () => {
           loadedTimeout = null
           loadedResolver = null
           loadedPromise = null
-          reject(new Error('Auth store not loaded within the timeout period'))
+          reject(
+            new AuthStoreError(
+              'Auth store not loaded within the timeout period',
+              AuthStoreErrorCode.LoadingTimedOut,
+            ),
+          )
         }, milliseconds)
       })
     }

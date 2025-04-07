@@ -29,6 +29,7 @@ This library follows a streamlined approach to error handling:
 
 - **Expected errors** (like invalid credentials or already-used emails) are captured in the `result` state
 - **Unexpected errors** (like network issues) are thrown to be handled by your app's error boundaries or try/catch blocks
+- **Auth store errors** are available via the `error` property in the auth store and can be identified using `AuthStoreError` and `AuthStoreErrorCode`
 
 ```ts
 try {
@@ -47,6 +48,38 @@ try {
 }
 ```
 
+For handling auth store errors:
+
+```ts
+import {
+  useAuthStore,
+  AuthStoreError,
+  AuthStoreErrorCode,
+} from 'vue-bare-firebase-auth'
+import { storeToRefs } from 'pinia'
+
+const authStore = useAuthStore()
+const { error } = storeToRefs(authStore)
+
+watch(error, (currentError) => {
+  if (currentError instanceof AuthStoreError) {
+    switch (currentError.code) {
+      case AuthStoreErrorCode.LoadingTimedOut:
+        console.log('Auth store loading timed out')
+        break
+      case AuthStoreErrorCode.Unknown:
+        console.log('Unknown auth store error')
+        break
+      default:
+        // Handle other error codes including Firebase errors
+        console.error(
+          `Auth error: ${currentError.message} (${currentError.code})`,
+        )
+    }
+  }
+})
+```
+
 ## Composables
 
 ### `useAuthStore`
@@ -54,7 +87,11 @@ try {
 Central store for managing authentication state including user info and claims.
 
 ```ts
-import { useAuthStore } from 'vue-bare-firebase-auth'
+import {
+  useAuthStore,
+  AuthStoreError,
+  AuthStoreErrorCode,
+} from 'vue-bare-firebase-auth'
 import { storeToRefs } from 'pinia'
 
 const authStore = useAuthStore()
@@ -68,6 +105,15 @@ const { state } = storeToRefs(authStore)
 // Watch for any changes to the entire auth state
 watch(state, (newState) => {
   console.log('Auth state changed:', newState)
+})
+
+// Watch for specific auth errors
+watch(error, (currentError) => {
+  if (currentError instanceof AuthStoreError) {
+    if (currentError.code === AuthStoreErrorCode.LoadingTimedOut) {
+      console.log('Auth store loading timed out')
+    }
+  }
 })
 
 // Initialize auth tracking
