@@ -1,18 +1,26 @@
 import type { User } from 'firebase/auth'
 import { defineStore } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, readonly, ref, watch } from 'vue'
+
+interface AuthState {
+  user: User | null
+  claims: Record<string, unknown>
+  loaded: boolean
+  error: Error | null
+}
 
 /**
  * Authentication store with state management
  */
 export const useAuthStore = defineStore('auth', () => {
-  const user = ref<User | null>(null)
-  const claims = ref<Record<string, unknown>>({})
-  const loaded = ref(false)
-  const error = ref<Error | null>(null)
-  const unsubscribe = ref<(() => void) | undefined>()
+  const state = ref<AuthState>({
+    user: null,
+    claims: {},
+    loaded: false,
+    error: null,
+  })
 
-  const isLoggedIn = computed(() => user.value !== null)
+  const unsubscribe = ref<(() => void) | undefined>()
 
   // Promise that resolves when loaded becomes true
   let loadedPromise: Promise<void> | null = null
@@ -24,19 +32,30 @@ export const useAuthStore = defineStore('auth', () => {
 
     const updateAuthState = async (updatedUser: User | null) => {
       try {
-        user.value = updatedUser
-
         if (updatedUser) {
           const idTokenResult = await updatedUser.getIdTokenResult()
-          claims.value = idTokenResult.claims
-        } else {
-          claims.value = {}
-        }
 
-        loaded.value = true
-        error.value = null
+          state.value = {
+            ...state.value,
+            user: updatedUser,
+            claims: idTokenResult.claims,
+            loaded: true,
+            error: null,
+          }
+        } else {
+          state.value = {
+            ...state.value,
+            user: null,
+            claims: {},
+            loaded: true,
+            error: null,
+          }
+        }
       } catch (err) {
-        error.value = err instanceof Error ? err : new Error(String(err))
+        state.value = {
+          ...state.value,
+          error: err instanceof Error ? err : new Error(String(err)),
+        }
       }
     }
 
@@ -51,13 +70,13 @@ export const useAuthStore = defineStore('auth', () => {
    * @throws Error if store is not loaded within the timeout period
    */
   const waitUntilLoaded = async (milliseconds: number = 8000) => {
-    if (loaded.value) {
+    if (state.value.loaded) {
       return
     }
 
     if (!loadedPromise) {
       loadedPromise = new Promise<void>((resolve, reject) => {
-        if (loaded.value) {
+        if (state.value.loaded) {
           resolve()
           return
         }
@@ -80,11 +99,11 @@ export const useAuthStore = defineStore('auth', () => {
    * Forces a refresh of the user's ID token
    */
   const refreshToken = async () => {
-    if (!user.value) {
+    if (!state.value.user) {
       return
     }
 
-    await user.value.getIdToken(true)
+    await state.value.user.getIdToken(true)
   }
 
   /**
@@ -94,22 +113,32 @@ export const useAuthStore = defineStore('auth', () => {
     const { getAuth, signOut } = await import('firebase/auth')
 
     await signOut(getAuth())
-    error.value = null
+
+    state.value = {
+      ...state.value,
+      error: null,
+    }
   }
 
   /**
    * Clears the current error
    */
   const clearError = () => {
-    error.value = null
+    state.value = {
+      ...state.value,
+      error: null,
+    }
   }
 
   const unload = () => {
     unsubscribe.value?.()
-    user.value = null
-    claims.value = {}
-    loaded.value = false
-    error.value = null
+
+    state.value = {
+      user: null,
+      claims: {},
+      loaded: false,
+      error: null,
+    }
 
     // Reset the loading promise state
     if (loadedTimeout !== null) {
@@ -120,25 +149,37 @@ export const useAuthStore = defineStore('auth', () => {
     loadedPromise = null
   }
 
-  // Top-level watcher for loaded state
-  watch(loaded, (isLoaded) => {
-    if (isLoaded && loadedResolver) {
-      loadedResolver()
-      loadedResolver = null
+  // Computed property for login state
+  const isLoggedIn = computed(() => state.value.user !== null)
 
-      if (loadedTimeout !== null) {
-        window.clearTimeout(loadedTimeout)
-        loadedTimeout = null
+  // Top-level watcher for loaded state
+  watch(
+    () => state.value.loaded,
+    (isLoaded) => {
+      if (isLoaded && loadedResolver) {
+        loadedResolver()
+        loadedResolver = null
+
+        if (loadedTimeout !== null) {
+          window.clearTimeout(loadedTimeout)
+          loadedTimeout = null
+        }
       }
-    }
-  })
+    },
+  )
 
   return {
-    user,
-    claims,
-    loaded,
-    error,
+    // State object for atomic updates
+    state: readonly(state),
+
+    // Computed properties for convenience
+    user: computed(() => state.value.user),
+    claims: computed(() => state.value.claims),
+    loaded: computed(() => state.value.loaded),
+    error: computed(() => state.value.error),
     isLoggedIn,
+
+    // Methods
     init,
     waitUntilLoaded,
     refreshToken,

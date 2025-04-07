@@ -55,9 +55,20 @@ Central store for managing authentication state including user info and claims.
 
 ```ts
 import { useAuthStore } from 'vue-bare-firebase-auth'
+import { storeToRefs } from 'pinia'
 
 const authStore = useAuthStore()
-const { user, claims, loaded, isLoggedIn } = storeToRefs(authStore)
+
+// Access via individual refs
+const { user, claims, loaded, isLoggedIn, error } = storeToRefs(authStore)
+
+// Or access all state at once
+const { state } = storeToRefs(authStore)
+
+// Watch for any changes to the entire auth state
+watch(state, (newState) => {
+  console.log('Auth state changed:', newState)
+})
 
 // Initialize auth tracking
 await authStore.init()
@@ -67,6 +78,9 @@ await authStore.waitUntilLoaded()
 
 // Sign out
 await authStore.signOut()
+
+// Clear any errors
+authStore.clearError()
 ```
 
 ### `useCreateUserWithEmailAndPassword`
