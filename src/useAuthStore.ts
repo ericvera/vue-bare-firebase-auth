@@ -173,7 +173,10 @@ export const useAuthStore = defineStore('auth', () => {
     state: readonly(state),
 
     // Computed properties for convenience
-    user: computed(() => state.value.user),
+    // NOTE: Using spread operator to create a non-readonly copy of the User
+    // object to avoid type compatibility issues with Firebase's mutable User
+    // type
+    user: computed(() => (state.value.user ? { ...state.value.user } : null)),
     claims: computed(() => state.value.claims),
     loaded: computed(() => state.value.loaded),
     error: computed(() => state.value.error),
