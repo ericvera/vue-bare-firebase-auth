@@ -1,47 +1,50 @@
-import { readonly, ref } from 'vue'
-
-interface UseSendPasswordResetEmailParam {
-  onError: (error: unknown) => void
-}
+import { computed, readonly, ref } from 'vue'
 
 export enum SendPasswordResetEmailResult {
   Success = 'success',
 }
 
+interface SendPasswordResetEmailState {
+  submitting: boolean
+  result: SendPasswordResetEmailResult | undefined
+}
+
 /**
  * Send password reset email, handling common error cases.
  * Returns submitting state and result of send attempt.
- *
- * @param param0 - Object containing error handler
- * @param param0.onError - Handler for unhandled errors during send
  */
-export const useSendPasswordResetEmail = ({
-  onError,
-}: UseSendPasswordResetEmailParam) => {
-  const submitting = ref(false)
-  const result = ref<SendPasswordResetEmailResult>()
+export const useSendPasswordResetEmail = () => {
+  const state = ref<SendPasswordResetEmailState>({
+    submitting: false,
+    result: undefined,
+  })
 
   const sendPasswordResetEmail = async (email: string): Promise<void> => {
-    submitting.value = true
-    result.value = undefined
+    state.value = {
+      submitting: true,
+      result: undefined,
+    }
 
-    try {
-      const { getAuth, sendPasswordResetEmail: _sendPasswordResetEmail } =
-        await import('firebase/auth')
+    const { getAuth, sendPasswordResetEmail: firebaseSendPasswordResetEmail } =
+      await import('firebase/auth')
 
-      await _sendPasswordResetEmail(getAuth(), email)
-      result.value = SendPasswordResetEmailResult.Success
-      submitting.value = false
-    } catch (e) {
-      // sendPasswordResetEmail does not throw an error if the email is not found
-      // so any error here is unexpected
-      onError(e)
+    await firebaseSendPasswordResetEmail(getAuth(), email)
+
+    state.value = {
+      submitting: false,
+      result: SendPasswordResetEmailResult.Success,
     }
   }
 
   return {
-    submitting: readonly(submitting),
-    result: readonly(result),
+    // State object for atomic updates
+    state: readonly(state),
+
+    // Computed properties for convenience
+    submitting: computed(() => state.value.submitting),
+    result: computed(() => state.value.result),
+
+    // Methods
     sendPasswordResetEmail,
   }
 }

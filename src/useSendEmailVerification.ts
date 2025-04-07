@@ -1,5 +1,5 @@
 import { storeToRefs } from 'pinia'
-import { readonly, ref, watch } from 'vue'
+import { computed, readonly, ref, watch } from 'vue'
 import { useAuthStore } from './useAuthStore.js'
 
 type SendEmailVerificationResult = 'link-sent' | 'email-verified' | undefined
@@ -11,19 +11,10 @@ interface SendEmailVerificationState {
   result: SendEmailVerificationResult
 }
 
-interface UseSendEmailVerificationParam {
-  onError: (error: unknown) => void
-}
-
 /**
  * Send email verification, handling common error cases.
- *
- * @param param0 - Object containing error handler
- * @param param0.onError - Handler for unhandled errors during send
  */
-export const useSendEmailVerification = ({
-  onError,
-}: UseSendEmailVerificationParam) => {
+export const useSendEmailVerification = () => {
   const state = ref<SendEmailVerificationState>({
     loaded: false,
     submitting: false,
@@ -32,7 +23,7 @@ export const useSendEmailVerification = ({
   })
 
   const authStore = useAuthStore()
-  const { state: authState } = storeToRefs(authStore)
+  const { user } = storeToRefs(authStore)
 
   const sendEmailVerification = async (): Promise<void> => {
     if (!state.value.loaded) {
@@ -49,24 +40,19 @@ export const useSendEmailVerification = ({
       result: undefined,
     }
 
-    if (!authState.value.user) {
+    if (!user.value) {
       throw new Error('User unexpectedly not authenticated.')
     }
 
-    try {
-      const { sendEmailVerification: _sendEmailVerification } = await import(
-        'firebase/auth'
-      )
+    const { sendEmailVerification: firebaseSendEmailVerification } =
+      await import('firebase/auth')
 
-      await _sendEmailVerification(authState.value.user)
+    await firebaseSendEmailVerification(user.value)
 
-      state.value = {
-        ...state.value,
-        submitting: false,
-        result: 'link-sent',
-      }
-    } catch (e) {
-      onError(e)
+    state.value = {
+      ...state.value,
+      submitting: false,
+      result: 'link-sent',
     }
   }
 
@@ -80,29 +66,36 @@ export const useSendEmailVerification = ({
   }
 
   watch(
-    [authState, state],
+    [user, state],
     async () => {
-      if (state.value.loaded || !authState.value.loaded) {
+      if (state.value.loaded || !user.value) {
         return
       }
 
       // Ensure user is reloaded to get latest email verification status.
-      await authState.value.user?.reload()
+      await user.value.reload()
 
       state.value = {
         ...state.value,
         loaded: true,
-        email: authState.value.user?.email ?? undefined,
-        result: authState.value.user?.emailVerified
-          ? 'email-verified'
-          : undefined,
+        email: user.value.email ?? undefined,
+        result: user.value.emailVerified ? 'email-verified' : undefined,
       }
     },
     { immediate: true },
   )
 
   return {
+    // State object for atomic updates
     state: readonly(state),
+
+    // Computed properties for convenience
+    loaded: computed(() => state.value.loaded),
+    submitting: computed(() => state.value.submitting),
+    email: computed(() => state.value.email),
+    result: computed(() => state.value.result),
+
+    // Methods
     sendEmailVerification,
     reset,
   }

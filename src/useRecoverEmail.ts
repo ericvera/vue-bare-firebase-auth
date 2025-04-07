@@ -1,5 +1,5 @@
 import type { ActionCodeInfo } from 'firebase/auth'
-import { readonly, ref } from 'vue'
+import { computed, readonly, ref } from 'vue'
 import { getFirebaseErrorCode } from './internal/getFirebaseErrorCode.js'
 
 export enum RecoverEmailError {
@@ -18,10 +18,6 @@ export enum RecoverEmailError {
   EmailAlreadyInUse = 'auth/email-already-in-use',
 }
 
-interface UseRecoverEmailParam {
-  onError: (error: unknown) => void
-}
-
 type RecoverEmailResult = RecoverEmailError | 'success' | undefined
 
 interface RecoverEmailState {
@@ -30,7 +26,7 @@ interface RecoverEmailState {
   loaded: boolean
 }
 
-export const useRecoverEmail = ({ onError }: UseRecoverEmailParam) => {
+export const useRecoverEmail = () => {
   const state = ref<RecoverEmailState>({
     result: undefined,
     email: undefined,
@@ -82,13 +78,22 @@ export const useRecoverEmail = ({ onError }: UseRecoverEmailParam) => {
           loaded: true,
         }
       } else {
-        onError(e)
+        // Simply throw unexpected errors for global handling
+        throw e
       }
     }
   }
 
   return {
+    // State object for atomic updates
     state: readonly(state),
+
+    // Computed properties for convenience
+    result: computed(() => state.value.result),
+    email: computed(() => state.value.email),
+    loaded: computed(() => state.value.loaded),
+
+    // Methods
     handleRecoverEmail,
   }
 }

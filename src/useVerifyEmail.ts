@@ -1,4 +1,4 @@
-import { readonly, ref } from 'vue'
+import { computed, readonly, ref } from 'vue'
 import { getFirebaseErrorCode } from './internal/getFirebaseErrorCode.js'
 
 export enum VerifyEmailError {
@@ -20,11 +20,7 @@ interface VerifyEmailState {
   result: VerifyEmailResult
 }
 
-interface UseVerifyEmailParam {
-  onError: (error: unknown) => void
-}
-
-export const useVerifyEmail = ({ onError }: UseVerifyEmailParam) => {
+export const useVerifyEmail = () => {
   const state = ref<VerifyEmailState>({
     loaded: false,
     result: undefined,
@@ -67,13 +63,21 @@ export const useVerifyEmail = ({ onError }: UseVerifyEmailParam) => {
           result: code as VerifyEmailError,
         }
       } else {
-        onError(e)
+        // Simply throw unexpected errors for global handling
+        throw e
       }
     }
   }
 
   return {
+    // State object for atomic updates
     state: readonly(state),
+
+    // Computed properties for convenience
+    loaded: computed(() => state.value.loaded),
+    result: computed(() => state.value.result),
+
+    // Methods
     handleVerifyEmail,
   }
 }

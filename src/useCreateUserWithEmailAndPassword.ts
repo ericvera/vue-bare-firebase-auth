@@ -1,4 +1,4 @@
-import { readonly, ref } from 'vue'
+import { computed, readonly, ref } from 'vue'
 import { getFirebaseErrorCode } from './internal/getFirebaseErrorCode.js'
 
 export enum CreateUserResult {
@@ -8,59 +8,71 @@ export enum CreateUserResult {
   WeakPassword = 'auth/weak-password',
 }
 
-interface UseCreateUserWithEmailAndPasswordParam {
-  onError: (error: unknown) => void
+interface CreateUserState {
+  submitting: boolean
+  result: CreateUserResult | undefined
 }
 
 /**
  * Create a new user with email and password, handling common error cases.
  * Returns submitting state and result of creation attempt.
- *
- * @param param0 - Object containing error handler
- * @param param0.onError - Handler for unhandled errors during user creation
  */
-export const useCreateUserWithEmailAndPassword = ({
-  onError,
-}: UseCreateUserWithEmailAndPasswordParam) => {
-  const submitting = ref(false)
-  const result = ref<CreateUserResult>()
+export const useCreateUserWithEmailAndPassword = () => {
+  const state = ref<CreateUserState>({
+    submitting: false,
+    result: undefined,
+  })
 
   const createUserWithEmailAndPassword = async (
     email: string,
     password: string,
   ): Promise<void> => {
-    submitting.value = true
-    result.value = undefined
+    state.value = {
+      submitting: true,
+      result: undefined,
+    }
 
     try {
       const {
         getAuth,
-        createUserWithEmailAndPassword: _createUserWithEmailAndPassword,
+        createUserWithEmailAndPassword: firebaseCreateUserWithEmailAndPassword,
       } = await import('firebase/auth')
 
-      await _createUserWithEmailAndPassword(getAuth(), email, password)
+      await firebaseCreateUserWithEmailAndPassword(getAuth(), email, password)
 
-      result.value = CreateUserResult.Success
-      submitting.value = false
+      state.value = {
+        submitting: false,
+        result: CreateUserResult.Success,
+      }
     } catch (e) {
       const code = getFirebaseErrorCode(e)
 
-      switch (code) {
-        case CreateUserResult.EmailAlreadyInUse:
-        case CreateUserResult.InvalidEmail:
-        case CreateUserResult.WeakPassword:
-          result.value = code as CreateUserResult
-          submitting.value = false
-          break
-        default:
-          onError(e)
+      // Only handle expected errors
+      if (
+        code === CreateUserResult.EmailAlreadyInUse ||
+        code === CreateUserResult.InvalidEmail ||
+        code === CreateUserResult.WeakPassword
+      ) {
+        state.value = {
+          submitting: false,
+          result: code as CreateUserResult,
+        }
+      } else {
+        // Simply throw unexpected errors for global handling
+        throw e
       }
     }
   }
 
   return {
-    submitting: readonly(submitting),
-    result: readonly(result),
+    // State object for atomic updates
+    state: readonly(state),
+
+    // Computed properties for convenience
+    submitting: computed(() => state.value.submitting),
+    result: computed(() => state.value.result),
+
+    // Methods
     createUserWithEmailAndPassword,
   }
 }

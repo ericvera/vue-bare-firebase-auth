@@ -1,4 +1,4 @@
-import { readonly, ref } from 'vue'
+import { computed, readonly, ref } from 'vue'
 import { getFirebaseErrorCode } from './internal/getFirebaseErrorCode.js'
 
 export enum ResetPasswordError {
@@ -26,11 +26,7 @@ interface ResetPasswordState {
   email: string | undefined
 }
 
-interface UseResetPasswordParam {
-  onError: (error: unknown) => void
-}
-
-export const useResetPassword = ({ onError }: UseResetPasswordParam) => {
+export const useResetPassword = () => {
   const state = ref<ResetPasswordState>({
     loaded: false,
     submitting: false,
@@ -74,7 +70,8 @@ export const useResetPassword = ({ onError }: UseResetPasswordParam) => {
             email: undefined,
           }
         } else {
-          onError(e)
+          // Simply throw unexpected errors for global handling
+          throw e
         }
       }
     }
@@ -87,23 +84,28 @@ export const useResetPassword = ({ onError }: UseResetPasswordParam) => {
 
     state.value.submitting = true
 
-    try {
-      const { getAuth, confirmPasswordReset } = await import('firebase/auth')
+    const { getAuth, confirmPasswordReset } = await import('firebase/auth')
 
-      await confirmPasswordReset(getAuth(), oobCode, newPassword)
+    await confirmPasswordReset(getAuth(), oobCode, newPassword)
 
-      state.value = {
-        ...state.value,
-        result: 'password-updated',
-        submitting: false,
-      }
-    } catch (e) {
-      onError(e)
+    state.value = {
+      ...state.value,
+      result: 'password-updated',
+      submitting: false,
     }
   }
 
   return {
+    // State object for atomic updates
     state: readonly(state),
+
+    // Computed properties for convenience
+    loaded: computed(() => state.value.loaded),
+    submitting: computed(() => state.value.submitting),
+    result: computed(() => state.value.result),
+    email: computed(() => state.value.email),
+
+    // Methods
     handleResetPassword,
     resetPassword,
   }
