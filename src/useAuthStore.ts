@@ -1,159 +1,149 @@
 import type { User } from 'firebase/auth'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 /**
- * State interface for the authentication store
+ * Authentication store with state management
  */
-interface State<TClaims extends object = object> {
-  /** The current Firebase user */
-  user: User | undefined
-  /** Custom claims associated with the user */
-  claims: TClaims
-  /** Whether the initial auth state has been loaded */
-  loaded: boolean
-  /** Last error that occurred in the store */
-  error: Error | null
-}
+export const useAuthStore = defineStore('auth', () => {
+  const user = ref<User | null>(null)
+  const claims = ref<Record<string, unknown>>({})
+  const loaded = ref(false)
+  const error = ref<Error | null>(null)
+  const unsubscribe = ref<(() => void) | undefined>()
 
-const storeId = 'vue-bare-firebase-auth-store'
+  const isLoggedIn = computed(() => user.value !== null)
 
-/**
- * Creates and returns an authentication store with state management
- * @template TClaims - Type for custom claims
- */
-export const useAuthStore = <TClaims extends object = object>() =>
-  defineStore(storeId, () => {
-    const unsubscribe = ref<(() => void) | undefined>()
+  // Promise that resolves when loaded becomes true
+  let loadedPromise: Promise<void> | null = null
+  let loadedResolver: (() => void) | null = null
+  let loadedTimeout: number | null = null
 
-    const state = ref<State<TClaims>>({
-      user: undefined,
-      claims: {} as TClaims,
-      loaded: false,
-      error: null,
+  const init = async () => {
+    const { getAuth, onIdTokenChanged } = await import('firebase/auth')
+
+    const updateAuthState = async (updatedUser: User | null) => {
+      try {
+        user.value = updatedUser
+
+        if (updatedUser) {
+          const idTokenResult = await updatedUser.getIdTokenResult()
+          claims.value = idTokenResult.claims
+        } else {
+          claims.value = {}
+        }
+
+        loaded.value = true
+        error.value = null
+      } catch (err) {
+        error.value = err instanceof Error ? err : new Error(String(err))
+      }
+    }
+
+    unsubscribe.value = onIdTokenChanged(getAuth(), (updatedUser) => {
+      void updateAuthState(updatedUser)
     })
+  }
 
-    const isLoggedIn = computed(() => state.value.user !== undefined)
+  /**
+   * Waits for the auth store to be loaded
+   * @param milliseconds - Maximum time to wait in milliseconds
+   * @throws Error if store is not loaded within the timeout period
+   */
+  const waitUntilLoaded = async (milliseconds: number = 8000) => {
+    if (loaded.value) {
+      return
+    }
 
-    const init = async () => {
-      try {
-        const { getAuth, onIdTokenChanged } = await import('firebase/auth')
-
-        const updateAuthState = async (updatedUser: User | null) => {
-          try {
-            const claims = ((await updatedUser?.getIdTokenResult())?.claims ??
-              {}) as TClaims
-
-            state.value = {
-              user: updatedUser ?? undefined,
-              claims,
-              loaded: true,
-              error: null,
-            }
-          } catch (error) {
-            state.value.error =
-              error instanceof Error ? error : new Error(String(error))
-          }
+    if (!loadedPromise) {
+      loadedPromise = new Promise<void>((resolve, reject) => {
+        if (loaded.value) {
+          resolve()
+          return
         }
 
-        unsubscribe.value = onIdTokenChanged(getAuth(), (updatedUser) => {
-          void updateAuthState(updatedUser)
-        })
-      } catch (error) {
-        state.value.error =
-          error instanceof Error ? error : new Error(String(error))
+        loadedResolver = resolve
+
+        loadedTimeout = window.setTimeout(() => {
+          loadedTimeout = null
+          loadedResolver = null
+          loadedPromise = null
+          reject(new Error('Auth store not loaded within the timeout period'))
+        }, milliseconds)
+      })
+    }
+
+    return loadedPromise
+  }
+
+  /**
+   * Forces a refresh of the user's ID token
+   */
+  const refreshToken = async () => {
+    if (!user.value) {
+      return
+    }
+
+    await user.value.getIdToken(true)
+  }
+
+  /**
+   * Signs out the current user
+   */
+  const signOut = async () => {
+    const { getAuth, signOut } = await import('firebase/auth')
+
+    await signOut(getAuth())
+    error.value = null
+  }
+
+  /**
+   * Clears the current error
+   */
+  const clearError = () => {
+    error.value = null
+  }
+
+  const unload = () => {
+    unsubscribe.value?.()
+    user.value = null
+    claims.value = {}
+    loaded.value = false
+    error.value = null
+
+    // Reset the loading promise state
+    if (loadedTimeout !== null) {
+      window.clearTimeout(loadedTimeout)
+      loadedTimeout = null
+    }
+    loadedResolver = null
+    loadedPromise = null
+  }
+
+  // Top-level watcher for loaded state
+  watch(loaded, (isLoaded) => {
+    if (isLoaded && loadedResolver) {
+      loadedResolver()
+      loadedResolver = null
+
+      if (loadedTimeout !== null) {
+        window.clearTimeout(loadedTimeout)
+        loadedTimeout = null
       }
     }
+  })
 
-    void init()
-
-    /**
-     * Waits for the auth store to be loaded
-     * @param milliseconds - Maximum time to wait in milliseconds
-     * @throws Error if store is not loaded within the timeout period
-     */
-    const waitUntilLoaded = async (milliseconds: number = 60000) => {
-      try {
-        for (let i = 0; i < milliseconds / 10; i++) {
-          if (state.value.loaded) {
-            return
-          }
-
-          await new Promise((resolve) => setTimeout(resolve, 10))
-        }
-
-        const error = new Error(
-          'Auth store not loaded within the timeout period',
-        )
-        state.value.error = error
-        throw error
-      } catch (error) {
-        state.value.error =
-          error instanceof Error ? error : new Error(String(error))
-        throw error
-      }
-    }
-
-    /**
-     * Forces a refresh of the user's ID token
-     */
-    const refreshToken = async () => {
-      try {
-        if (state.value.user) {
-          await state.value.user.getIdToken(true)
-        }
-      } catch (error) {
-        state.value.error =
-          error instanceof Error ? error : new Error(String(error))
-        throw error
-      }
-    }
-
-    /**
-     * Signs out the current user
-     */
-    const signOut = async () => {
-      try {
-        const { getAuth, signOut } = await import('firebase/auth')
-        await signOut(getAuth())
-        state.value.error = null
-      } catch (error) {
-        state.value.error =
-          error instanceof Error ? error : new Error(String(error))
-        throw error
-      }
-    }
-
-    /**
-     * Clears the current error
-     */
-    const clearError = () => {
-      state.value.error = null
-    }
-
-    const unload = () => {
-      try {
-        unsubscribe.value?.()
-
-        state.value = {
-          user: undefined,
-          claims: {} as TClaims,
-          loaded: false,
-          error: null,
-        }
-      } catch (error) {
-        state.value.error =
-          error instanceof Error ? error : new Error(String(error))
-      }
-    }
-
-    return {
-      state,
-      isLoggedIn,
-      waitUntilLoaded,
-      refreshToken,
-      signOut,
-      unload,
-      clearError,
-    }
-  })()
+  return {
+    user,
+    claims,
+    loaded,
+    error,
+    isLoggedIn,
+    init,
+    waitUntilLoaded,
+    refreshToken,
+    signOut,
+    unload,
+    clearError,
+  }
+})
