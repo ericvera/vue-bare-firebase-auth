@@ -25,7 +25,7 @@
   },
   "packageManager": "yarn@4.9.4",
   "peerDependencies": {
-    "firebase": ">=12.2.0",
+    "firebase": ">=12.1.0",
     "pinia": ">=3.0.0",
     "vue": ">=3.5.0"
   },
@@ -35,7 +35,7 @@
     "@types/node": "^24.3.1",
     "@vitejs/plugin-vue": "^6.0.1",
     "eslint": "^9.34.0",
-    "firebase": ">=12.2.0",
+    "firebase": ">=12.1.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
     "pinia": ">=3.0.0",
