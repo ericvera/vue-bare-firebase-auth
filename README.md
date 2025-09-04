@@ -19,9 +19,9 @@ Vue Bare Firebase Auth provides a collection of lightweight, typed Vue 3 composa
 
 ## Requirements
 
-- Vue 3.x
-- Firebase 10.x
-- TypeScript 5.x
+- Vue >=3.5.0
+- Firebase >=12.2.0
+- TypeScript >=5.9.2
 
 ## Error Handling
 

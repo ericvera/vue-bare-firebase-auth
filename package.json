@@ -23,30 +23,30 @@
     "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable"
   },
-  "packageManager": "yarn@4.9.2",
+  "packageManager": "yarn@4.9.4",
   "peerDependencies": {
-    "firebase": "11.x",
-    "pinia": "3.x",
-    "vue": "3.x"
+    "firebase": ">=12.2.0",
+    "pinia": ">=3.0.0",
+    "vue": ">=3.5.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.31.0",
+    "@eslint/js": "^9.34.0",
     "@tsconfig/strictest": "^2.0.5",
-    "@types/node": "^22.16.5",
-    "@vitejs/plugin-vue": "^6.0.0",
-    "eslint": "^9.31.0",
-    "firebase": "12.x",
+    "@types/node": "^24.3.1",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "eslint": "^9.34.0",
+    "firebase": ">=12.2.0",
     "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
-    "pinia": "3.x",
+    "lint-staged": "^16.1.6",
+    "pinia": ">=3.0.0",
     "pinst": "^3.0.0",
     "prettier": "^3.6.2",
-    "typescript": "^5.8.3",
-    "typescript-eslint": "^8.38.0",
-    "vite": "^7.0.6",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.42.0",
+    "vite": "^7.1.4",
     "vite-plugin-dts": "^4.5.4",
-    "vue": "3.x",
-    "vue-tsc": "^3.0.4"
+    "vue": ">=3.5.0",
+    "vue-tsc": "^3.0.6"
   },
   "prettier": {
     "tabWidth": 2,
