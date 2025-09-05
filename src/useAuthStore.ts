@@ -74,7 +74,15 @@ export const useAuthStore = defineStore('auth', () => {
       }
     }
 
-    unsubscribe.value = onIdTokenChanged(getAuth(), (updatedUser) => {
+    // TODO: Remove
+    console.log('getAuth')
+
+    const auth = getAuth()
+
+    // TODO: Remove
+    console.log('auth created')
+
+    unsubscribe.value = onIdTokenChanged(auth, (updatedUser) => {
       void updateAuthState(updatedUser)
     })
   }
