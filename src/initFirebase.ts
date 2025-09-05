@@ -41,6 +41,12 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
 
     if (options.emulators.auth) {
       // TODO: Remove
+      const { getAuth } = await import('firebase/auth')
+
+      // TODO: Remove
+      console.log('getAuth (test)', getAuth(app))
+
+      // TODO: Remove
       console.log('initializing auth emulator')
 
       initPromises.push(
