@@ -16,11 +16,20 @@ import type { FirebaseInitOptions } from './types.js'
  * @returns A Promise that resolves to the initialized Firebase app instance
  */
 export const initFirebase = async (options: FirebaseInitOptions) => {
+  // TODO: Remove
+  console.log('initFirebase')
+
   const app = (await import('firebase/app')).initializeApp(options.config)
+
+  // TODO: Remove
+  console.log('app initialized:', app)
 
   const initPromises: Promise<void>[] = []
 
   if (options.emulators) {
+    // TODO: Remove
+    console.log('initializing emulators')
+
     const {
       connectToAuthEmulator,
       connectToFunctionsEmulator,
@@ -31,19 +40,31 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
     const host = options.emulators.host ?? '127.0.0.1'
 
     if (options.emulators.auth) {
+      // TODO: Remove
+      console.log('initializing auth emulator')
+
       initPromises.push(connectToAuthEmulator(options.emulators.auth, host))
     }
 
     if (options.emulators.functions) {
+      // TODO: Remove
+      console.log('initializing functions emulator')
+
       initPromises.push(
         connectToFunctionsEmulator(options.emulators.functions, host),
       )
     }
 
     if (options.emulators.firestore) {
+      // TODO: Remove
+      console.log('initializing firestore emulator')
+
       initPromises.push(
         connectToFirestoreEmulator(options.emulators.firestore, host),
       )
+
+      // TODO: Remove
+      console.log('initializing firestore lite emulator')
 
       initPromises.push(
         connectToFirestoreLiteEmulator(options.emulators.firestore, host),
@@ -52,14 +73,28 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
   }
 
   if (options.appCheck) {
+    // TODO: Remove
+    console.log('initializing app check')
+
     initPromises.push(initializeAppCheck(app, options.appCheck))
   }
 
   if (options.analytics) {
+    // TODO: Remove
+    console.log('initializing analytics')
+
     initPromises.push(initializeAnalytics(app, options.analytics))
   }
+  // TODO: Remove
+  console.log('waiting for emulators to be initialized')
 
   await Promise.all(initPromises)
+
+  // TODO: Remove
+  console.log('emulators initialized')
+
+  // TODO: Remove
+  console.log('app:', app)
 
   return app
 }
