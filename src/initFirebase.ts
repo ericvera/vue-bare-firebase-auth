@@ -43,7 +43,16 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
       // TODO: Remove
       console.log('initializing auth emulator')
 
-      initPromises.push(connectToAuthEmulator(options.emulators.auth, host))
+      initPromises.push(
+        connectToAuthEmulator(options.emulators.auth, host).catch(
+          (error: unknown) => {
+            // TODO: Remove
+            console.error('error initializing auth emulator:', error)
+
+            throw error
+          },
+        ),
+      )
     }
 
     if (options.emulators.functions) {
@@ -51,7 +60,14 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
       console.log('initializing functions emulator')
 
       initPromises.push(
-        connectToFunctionsEmulator(options.emulators.functions, host),
+        connectToFunctionsEmulator(options.emulators.functions, host).catch(
+          (error: unknown) => {
+            // TODO: Remove
+            console.error('error initializing functions emulator:', error)
+
+            throw error
+          },
+        ),
       )
     }
 
@@ -60,14 +76,28 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
       console.log('initializing firestore emulator')
 
       initPromises.push(
-        connectToFirestoreEmulator(options.emulators.firestore, host),
+        connectToFirestoreEmulator(options.emulators.firestore, host).catch(
+          (error: unknown) => {
+            // TODO: Remove
+            console.error('error initializing firestore emulator:', error)
+
+            throw error
+          },
+        ),
       )
 
       // TODO: Remove
       console.log('initializing firestore lite emulator')
 
       initPromises.push(
-        connectToFirestoreLiteEmulator(options.emulators.firestore, host),
+        connectToFirestoreLiteEmulator(options.emulators.firestore, host).catch(
+          (error: unknown) => {
+            // TODO: Remove
+            console.error('error initializing firestore lite emulator:', error)
+
+            throw error
+          },
+        ),
       )
     }
   }
@@ -76,15 +106,30 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
     // TODO: Remove
     console.log('initializing app check')
 
-    initPromises.push(initializeAppCheck(app, options.appCheck))
+    initPromises.push(
+      initializeAppCheck(app, options.appCheck).catch((error: unknown) => {
+        // TODO: Remove
+        console.error('error initializing app check:', error)
+
+        throw error
+      }),
+    )
   }
 
   if (options.analytics) {
     // TODO: Remove
     console.log('initializing analytics')
 
-    initPromises.push(initializeAnalytics(app, options.analytics))
+    initPromises.push(
+      initializeAnalytics(app, options.analytics).catch((error: unknown) => {
+        // TODO: Remove
+        console.error('error initializing analytics:', error)
+
+        throw error
+      }),
+    )
   }
+
   // TODO: Remove
   console.log('waiting for emulators to be initialized')
 
