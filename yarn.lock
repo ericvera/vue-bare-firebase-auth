@@ -20,23 +20,23 @@ __metadata:
   linkType: hard
 
 "@babel/parser@npm:^7.28.3":
-  version: 7.28.3
-  resolution: "@babel/parser@npm:7.28.3"
+  version: 7.28.4
+  resolution: "@babel/parser@npm:7.28.4"
   dependencies:
-    "@babel/types": "npm:^7.28.2"
+    "@babel/types": "npm:^7.28.4"
   bin:
     parser: ./bin/babel-parser.js
-  checksum: 10c0/1f41eb82623b0ca0f94521b57f4790c6c457cd922b8e2597985b36bdec24114a9ccf54640286a760ceb60f11fe9102d192bf60477aee77f5d45f1029b9b72729
+  checksum: 10c0/58b239a5b1477ac7ed7e29d86d675cc81075ca055424eba6485872626db2dc556ce63c45043e5a679cd925e999471dba8a3ed4864e7ab1dbf64306ab72c52707
   languageName: node
   linkType: hard
 
-"@babel/types@npm:^7.28.2":
-  version: 7.28.2
-  resolution: "@babel/types@npm:7.28.2"
+"@babel/types@npm:^7.28.4":
+  version: 7.28.4
+  resolution: "@babel/types@npm:7.28.4"
   dependencies:
     "@babel/helper-string-parser": "npm:^7.27.1"
     "@babel/helper-validator-identifier": "npm:^7.27.1"
-  checksum: 10c0/24b11c9368e7e2c291fe3c1bcd1ed66f6593a3975f479cbb9dd7b8c8d8eab8a962b0d2fca616c043396ce82500ac7d23d594fbbbd013828182c01596370a0b10
+  checksum: 10c0/ac6f909d6191319e08c80efbfac7bd9a25f80cc83b43cd6d82e7233f7a6b9d6e7b90236f3af7400a3f83b576895bcab9188a22b584eb0f224e80e6d4e95f4517
   languageName: node
   linkType: hard
 
@@ -222,7 +222,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint-community/eslint-utils@npm:^4.2.0, @eslint-community/eslint-utils@npm:^4.7.0":
+"@eslint-community/eslint-utils@npm:^4.7.0, @eslint-community/eslint-utils@npm:^4.8.0":
   version: 4.8.0
   resolution: "@eslint-community/eslint-utils@npm:4.8.0"
   dependencies:
@@ -284,10 +284,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eslint/js@npm:9.34.0, @eslint/js@npm:^9.34.0":
-  version: 9.34.0
-  resolution: "@eslint/js@npm:9.34.0"
-  checksum: 10c0/53f1bfd2a374683d9382a6850354555f6e89a88416c34a5d34e9fbbaf717e97c2b06300e8f93e5eddba8bda8951ccab7f93a680e56ded1a3d21d526019e69bab
+"@eslint/js@npm:9.35.0, @eslint/js@npm:^9.35.0":
+  version: 9.35.0
+  resolution: "@eslint/js@npm:9.35.0"
+  checksum: 10c0/d40fe38724bc76c085c0b753cdf937fa35c0d6807ae76b2632e3f5f66c3040c91adcf1aff2ce70b4f45752e60629fadc415eeec9af3be3c274bae1cac54b9840
   languageName: node
   linkType: hard
 
@@ -2357,17 +2357,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^9.34.0":
-  version: 9.34.0
-  resolution: "eslint@npm:9.34.0"
+"eslint@npm:^9.35.0":
+  version: 9.35.0
+  resolution: "eslint@npm:9.35.0"
   dependencies:
-    "@eslint-community/eslint-utils": "npm:^4.2.0"
+    "@eslint-community/eslint-utils": "npm:^4.8.0"
     "@eslint-community/regexpp": "npm:^4.12.1"
     "@eslint/config-array": "npm:^0.21.0"
     "@eslint/config-helpers": "npm:^0.3.1"
     "@eslint/core": "npm:^0.15.2"
     "@eslint/eslintrc": "npm:^3.3.1"
-    "@eslint/js": "npm:9.34.0"
+    "@eslint/js": "npm:9.35.0"
     "@eslint/plugin-kit": "npm:^0.3.5"
     "@humanfs/node": "npm:^0.16.6"
     "@humanwhocodes/module-importer": "npm:^1.0.1"
@@ -2403,7 +2403,7 @@ __metadata:
       optional: true
   bin:
     eslint: bin/eslint.js
-  checksum: 10c0/ba3e54fa0c8ed23d062f91519afaae77fed922a6c4d76130b6cd32154bcb406aaea4b3c5ed88e0be40828c1d5b6921592f3947dbdc5e2043de6bd7aa341fe5ea
+  checksum: 10c0/798c527520ccf62106f8cd210bd1db1f8eb1b0e7a56feb0a8b322bf3a1e6a0bc6dc3a414542c22b1b393d58d5e3cd0252c44c023049de9067b836450503a2f03
   languageName: node
   linkType: hard
 
@@ -2577,7 +2577,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"firebase@npm:>=12.1.0":
+"firebase@npm:^12.2.1":
   version: 12.2.1
   resolution: "firebase@npm:12.2.1"
   dependencies:
@@ -3381,9 +3381,9 @@ __metadata:
   linkType: hard
 
 "nano-spawn@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "nano-spawn@npm:1.0.2"
-  checksum: 10c0/d8cec78f127a44aa5e38be01746b3d963a8dcf8b00b4a05bf259b5369af2225b8c7dc9d12517050b90234e5c3eeea4ece5d18a5f9c6c3462b56f9f595f07e632
+  version: 1.0.3
+  resolution: "nano-spawn@npm:1.0.3"
+  checksum: 10c0/ea18857e493710a50ded333dd71677953bd9bd9e6a17ade74af957763c50a9a02205ef31bc0d6784f5b3ad82db3d9f47531e9baac2acf01118f9b7c35bd9d5de
   languageName: node
   linkType: hard
 
@@ -3587,7 +3587,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pinia@npm:>=3.0.0":
+"pinia@npm:^3.0.3":
   version: 3.0.3
   resolution: "pinia@npm:3.0.3"
   dependencies:
@@ -4374,25 +4374,25 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "vue-bare-firebase-auth@workspace:."
   dependencies:
-    "@eslint/js": "npm:^9.34.0"
+    "@eslint/js": "npm:^9.35.0"
     "@tsconfig/strictest": "npm:^2.0.5"
     "@types/node": "npm:^24.3.1"
     "@vitejs/plugin-vue": "npm:^6.0.1"
-    eslint: "npm:^9.34.0"
-    firebase: "npm:>=12.1.0"
+    eslint: "npm:^9.35.0"
+    firebase: "npm:^12.2.1"
     husky: "npm:^9.1.7"
     lint-staged: "npm:^16.1.6"
-    pinia: "npm:>=3.0.0"
+    pinia: "npm:^3.0.3"
     pinst: "npm:^3.0.0"
     prettier: "npm:^3.6.2"
     typescript: "npm:^5.9.2"
     typescript-eslint: "npm:^8.42.0"
     vite: "npm:^7.1.4"
     vite-plugin-dts: "npm:^4.5.4"
-    vue: "npm:>=3.5.0"
+    vue: "npm:^3.5.21"
     vue-tsc: "npm:^3.0.6"
   peerDependencies:
-    firebase: ">=12.1.0"
+    firebase: ">=12.2.0"
     pinia: ">=3.0.0"
     vue: ">=3.5.0"
   languageName: unknown
@@ -4412,7 +4412,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:>=3.5.0":
+"vue@npm:^3.5.21":
   version: 3.5.21
   resolution: "vue@npm:3.5.21"
   dependencies:
