@@ -1,3 +1,4 @@
+import type { FirebaseApp } from 'firebase/app'
 import type { PortOptions } from '../types.js'
 
 export const getPort = (options: PortOptions | true, defaultPort: number) => {
@@ -8,12 +9,13 @@ export const getPort = (options: PortOptions | true, defaultPort: number) => {
 }
 
 export const connectToAuthEmulator = async (
+  app: FirebaseApp,
   options: PortOptions | true,
   host: string,
 ) => {
   const { getAuth, connectAuthEmulator } = await import('firebase/auth')
 
-  const auth = getAuth()
+  const auth = getAuth(app)
 
   connectAuthEmulator(
     auth,
@@ -25,6 +27,7 @@ export const connectToAuthEmulator = async (
 }
 
 export const connectToFunctionsEmulator = async (
+  app: FirebaseApp,
   options: PortOptions | true,
   host: string,
 ) => {
@@ -32,23 +35,25 @@ export const connectToFunctionsEmulator = async (
     'firebase/functions'
   )
 
-  const functions = getFunctions()
+  const functions = getFunctions(app)
 
   connectFunctionsEmulator(functions, host, getPort(options, 5001))
 }
 
 export const connectToFirestoreEmulator = async (
+  app: FirebaseApp,
   options: PortOptions | true,
   host: string,
 ) => {
   const { getFirestore, connectFirestoreEmulator } = await import(
     'firebase/firestore'
   )
-  const firestore = getFirestore()
+  const firestore = getFirestore(app)
   connectFirestoreEmulator(firestore, host, getPort(options, 8080))
 }
 
 export const connectToFirestoreLiteEmulator = async (
+  app: FirebaseApp,
   options: PortOptions | true,
   host: string,
 ) => {
@@ -56,7 +61,7 @@ export const connectToFirestoreLiteEmulator = async (
     'firebase/firestore/lite'
   )
 
-  const firestore = getFirestore()
+  const firestore = getFirestore(app)
 
   connectFirestoreEmulator(firestore, host, getPort(options, 8080))
 }

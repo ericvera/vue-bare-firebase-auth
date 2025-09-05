@@ -44,7 +44,7 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
       console.log('initializing auth emulator')
 
       initPromises.push(
-        connectToAuthEmulator(options.emulators.auth, host).catch(
+        connectToAuthEmulator(app, options.emulators.auth, host).catch(
           (error: unknown) => {
             // TODO: Remove
             console.error('error initializing auth emulator:', error)
@@ -60,14 +60,16 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
       console.log('initializing functions emulator')
 
       initPromises.push(
-        connectToFunctionsEmulator(options.emulators.functions, host).catch(
-          (error: unknown) => {
-            // TODO: Remove
-            console.error('error initializing functions emulator:', error)
+        connectToFunctionsEmulator(
+          app,
+          options.emulators.functions,
+          host,
+        ).catch((error: unknown) => {
+          // TODO: Remove
+          console.error('error initializing functions emulator:', error)
 
-            throw error
-          },
-        ),
+          throw error
+        }),
       )
     }
 
@@ -76,28 +78,32 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
       console.log('initializing firestore emulator')
 
       initPromises.push(
-        connectToFirestoreEmulator(options.emulators.firestore, host).catch(
-          (error: unknown) => {
-            // TODO: Remove
-            console.error('error initializing firestore emulator:', error)
+        connectToFirestoreEmulator(
+          app,
+          options.emulators.firestore,
+          host,
+        ).catch((error: unknown) => {
+          // TODO: Remove
+          console.error('error initializing firestore emulator:', error)
 
-            throw error
-          },
-        ),
+          throw error
+        }),
       )
 
       // TODO: Remove
       console.log('initializing firestore lite emulator')
 
       initPromises.push(
-        connectToFirestoreLiteEmulator(options.emulators.firestore, host).catch(
-          (error: unknown) => {
-            // TODO: Remove
-            console.error('error initializing firestore lite emulator:', error)
+        connectToFirestoreLiteEmulator(
+          app,
+          options.emulators.firestore,
+          host,
+        ).catch((error: unknown) => {
+          // TODO: Remove
+          console.error('error initializing firestore lite emulator:', error)
 
-            throw error
-          },
-        ),
+          throw error
+        }),
       )
     }
   }
