@@ -7,7 +7,8 @@ export enum ResetPasswordError {
    */
   ExpiredActionCode = 'auth/expired-action-code',
   /**
-   * Thrown if the reset password code is invalid. This can happen if the code is
+   * Thrown if the reset password code is invalid. This can happen if the code
+   * is
    * malformed or has already been used.
    */
   InvalidActionCode = 'auth/invalid-action-code',

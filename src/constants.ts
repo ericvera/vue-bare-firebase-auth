@@ -1,5 +1,6 @@
 /**
- * Represents the different types of authentication actions that can be performed.
+ * Represents the different types of authentication actions that can be
+ * performed.
  */
 export enum AuthAction {
   /** Action for resetting a user's password */

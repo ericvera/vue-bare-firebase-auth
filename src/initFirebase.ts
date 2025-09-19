@@ -3,17 +3,21 @@ import { initializeAppCheck } from './internal/appCheck.js'
 import type { FirebaseInitOptions } from './types.js'
 
 /**
- * Initializes a Firebase application with optional features and emulator connections.
+ * Initializes a Firebase application with optional features and emulator
+ * connections.
  * @param options - Configuration options for Firebase initialization
  * @param options.config - Firebase configuration object
- * @param options.emulators - Optional emulator configuration for local development
- * @param options.emulators.host - Host address for emulators (defaults to '127.0.0.1')
+ * @param options.emulators - Optional emulator configuration for local
+ *   development
+ * @param options.emulators.host - Host address for emulators (defaults to
+ *   '127.0.0.1')
  * @param options.emulators.auth - Authentication emulator configuration
  * @param options.emulators.functions - Cloud Functions emulator configuration
  * @param options.emulators.firestore - Firestore emulator configuration
  * @param options.appCheck - Optional App Check configuration
  * @param options.analytics - Optional Analytics configuration
- * @returns A Promise that resolves to the initialized Firebase app instance
+ * @returns A Promise that resolves to the initialized Firebase app
+ *   instance
  */
 export const initFirebase = async (options: FirebaseInitOptions) => {
   const app = (await import('firebase/app')).initializeApp(options.config)

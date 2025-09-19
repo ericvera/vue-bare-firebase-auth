@@ -86,33 +86,31 @@ export const useAuthStore = defineStore('auth', () => {
    * @param milliseconds - Maximum time to wait in milliseconds
    * @throws Error if store is not loaded within the timeout period
    */
-  const waitUntilLoaded = async (milliseconds: number = 8000) => {
+  const waitUntilLoaded = async (milliseconds = 8000) => {
     if (state.value.loaded) {
       return
     }
 
-    if (!loadedPromise) {
-      loadedPromise = new Promise<void>((resolve, reject) => {
-        if (state.value.loaded) {
-          resolve()
-          return
-        }
+    loadedPromise ??= new Promise<void>((resolve, reject) => {
+      if (state.value.loaded) {
+        resolve()
+        return
+      }
 
-        loadedResolver = resolve
+      loadedResolver = resolve
 
-        loadedTimeout = window.setTimeout(() => {
-          loadedTimeout = null
-          loadedResolver = null
-          loadedPromise = null
-          reject(
-            new AuthStoreError(
-              'Auth store not loaded within the timeout period',
-              AuthStoreErrorCode.LoadingTimedOut,
-            ),
-          )
-        }, milliseconds)
-      })
-    }
+      loadedTimeout = window.setTimeout(() => {
+        loadedTimeout = null
+        loadedResolver = null
+        loadedPromise = null
+        reject(
+          new AuthStoreError(
+            'Auth store not loaded within the timeout period',
+            AuthStoreErrorCode.LoadingTimedOut,
+          ),
+        )
+      }, milliseconds)
+    })
 
     return loadedPromise
   }
