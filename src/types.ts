@@ -22,6 +22,8 @@ export interface AppCheckOptions {
 
 export interface FirebaseInitOptions {
   config: FirebaseOptions
+  /** Optional Firestore database ID for named databases (Enterprise) */
+  databaseId?: string
   emulators?: EmulatorOptions
   analytics?: AnalyticsOptions
   appCheck?: AppCheckOptions

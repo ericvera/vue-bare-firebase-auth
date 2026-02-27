@@ -7,6 +7,9 @@ import type { FirebaseInitOptions } from './types.js'
  * connections.
  * @param options - Configuration options for Firebase initialization
  * @param options.config - Firebase configuration object
+ * @param options.databaseId - Optional Firestore database ID for named
+ *   databases (e.g. Firestore Enterprise). When omitted, the default database
+ *   is used.
  * @param options.emulators - Optional emulator configuration for local
  *   development
  * @param options.emulators.host - Host address for emulators (defaults to
@@ -47,12 +50,24 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
     }
 
     if (options.emulators.firestore) {
+      const databaseId = options.databaseId
+
       initPromises.push(
-        connectToFirestoreEmulator(app, options.emulators.firestore, host),
+        connectToFirestoreEmulator(
+          app,
+          options.emulators.firestore,
+          host,
+          databaseId,
+        ),
       )
 
       initPromises.push(
-        connectToFirestoreLiteEmulator(app, options.emulators.firestore, host),
+        connectToFirestoreLiteEmulator(
+          app,
+          options.emulators.firestore,
+          host,
+          databaseId,
+        ),
       )
     }
   }

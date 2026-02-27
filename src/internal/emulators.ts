@@ -31,9 +31,8 @@ export const connectToFunctionsEmulator = async (
   options: PortOptions | true,
   host: string,
 ) => {
-  const { getFunctions, connectFunctionsEmulator } = await import(
-    'firebase/functions'
-  )
+  const { getFunctions, connectFunctionsEmulator } =
+    await import('firebase/functions')
 
   const functions = getFunctions(app)
 
@@ -44,11 +43,13 @@ export const connectToFirestoreEmulator = async (
   app: FirebaseApp,
   options: PortOptions | true,
   host: string,
+  databaseId?: string,
 ) => {
-  const { getFirestore, connectFirestoreEmulator } = await import(
-    'firebase/firestore'
-  )
-  const firestore = getFirestore(app)
+  const { getFirestore, connectFirestoreEmulator } =
+    await import('firebase/firestore')
+  const firestore = databaseId
+    ? getFirestore(app, databaseId)
+    : getFirestore(app)
   connectFirestoreEmulator(firestore, host, getPort(options, 8080))
 }
 
@@ -56,12 +57,14 @@ export const connectToFirestoreLiteEmulator = async (
   app: FirebaseApp,
   options: PortOptions | true,
   host: string,
+  databaseId?: string,
 ) => {
-  const { getFirestore, connectFirestoreEmulator } = await import(
-    'firebase/firestore/lite'
-  )
+  const { getFirestore, connectFirestoreEmulator } =
+    await import('firebase/firestore/lite')
 
-  const firestore = getFirestore(app)
+  const firestore = databaseId
+    ? getFirestore(app, databaseId)
+    : getFirestore(app)
 
   connectFirestoreEmulator(firestore, host, getPort(options, 8080))
 }

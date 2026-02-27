@@ -23,6 +23,31 @@ Vue Bare Firebase Auth provides a collection of lightweight, typed Vue 3 composa
 - Firebase >=12.2.0
 - TypeScript >=5.9.2
 
+## Initialization
+
+Use `initFirebase` to initialize your Firebase app with optional emulator connections, App Check, and Analytics:
+
+```ts
+import { initFirebase } from 'vue-bare-firebase-auth'
+
+const app = await initFirebase({
+  config: {
+    apiKey: '...',
+    authDomain: '...',
+    projectId: '...',
+    // ...other config
+  },
+  databaseId: 'my-database', // optional, for Firestore Enterprise named databases
+  emulators: {
+    host: '127.0.0.1',
+    auth: true,
+    firestore: true,
+  },
+})
+
+// Use getFirestore(app, 'my-database') when accessing Firestore with a named database
+```
+
 ## Error Handling
 
 This library follows a streamlined approach to error handling:
