@@ -2,7 +2,7 @@ name: Publish on push
 
 # The following counter is used to force running the worklow when for some
 # reason (like a mislabeling of the commit) the workflow is not triggered.
-# Counter: 1
+# Counter: 2
 
 on:
   push:
