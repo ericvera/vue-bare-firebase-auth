@@ -12,7 +12,7 @@
   ],
   "sideEffects": false,
   "engines": {
-    "node": ">=22"
+    "node": ">=20"
   },
   "scripts": {
     "build": "vue-tsc --noEmit && vite build",
@@ -32,7 +32,7 @@
   "devDependencies": {
     "@eslint/js": "^9.39.3",
     "@tsconfig/strictest": "^2.0.8",
-    "@types/node": "^24.10.15",
+    "@types/node": "^20.19.35",
     "@vitejs/plugin-vue": "^6.0.4",
     "eslint": "^9.39.3",
     "eslint-plugin-vue": "^10.8.0",
