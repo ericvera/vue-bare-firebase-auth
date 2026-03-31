@@ -1,4 +1,7 @@
 import { FirebaseOptions } from 'firebase/app'
+import type { PerformanceSettings } from 'firebase/performance'
+
+export type PerformanceOptions = PerformanceSettings
 
 export interface PortOptions {
   port: number
@@ -27,4 +30,5 @@ export interface FirebaseInitOptions {
   emulators?: EmulatorOptions
   analytics?: AnalyticsOptions
   appCheck?: AppCheckOptions
+  performance?: PerformanceOptions
 }

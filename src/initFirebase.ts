@@ -1,5 +1,6 @@
 import { initializeAnalytics } from './internal/analytics.js'
 import { initializeAppCheck } from './internal/appCheck.js'
+import { initializePerformanceMonitoring } from './internal/performance.js'
 import type { FirebaseInitOptions } from './types.js'
 
 /**
@@ -19,6 +20,8 @@ import type { FirebaseInitOptions } from './types.js'
  * @param options.emulators.firestore - Firestore emulator configuration
  * @param options.appCheck - Optional App Check configuration
  * @param options.analytics - Optional Analytics configuration
+ * @param options.performance - Optional Performance Monitoring settings; use
+ *   `{}` for defaults. (skipped when `window` is undefined)
  * @returns A Promise that resolves to the initialized Firebase app
  *   instance
  */
@@ -78,6 +81,10 @@ export const initFirebase = async (options: FirebaseInitOptions) => {
 
   if (options.analytics) {
     initPromises.push(initializeAnalytics(app, options.analytics))
+  }
+
+  if (options.performance !== undefined) {
+    initPromises.push(initializePerformanceMonitoring(app, options.performance))
   }
 
   await Promise.all(initPromises)
