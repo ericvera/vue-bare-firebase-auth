@@ -27,7 +27,7 @@ jobs:
       - name: Set Node version
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install Dependencies
         run: yarn
@@ -49,7 +49,7 @@ jobs:
 
       - name: Publish to NPM
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        run: npm publish --provenance
+        run: yarn npm publish --provenance
 
       - name: Create Release
         uses: ncipollo/release-action@v1
