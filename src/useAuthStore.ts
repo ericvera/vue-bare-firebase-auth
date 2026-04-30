@@ -1,5 +1,5 @@
 import type { User } from 'firebase/auth'
-import { defineStore } from 'pinia'
+import { defineStore, skipHydrate } from 'pinia'
 import { computed, readonly, ref, watch } from 'vue'
 import { AuthStoreError, AuthStoreErrorCode } from './errors/index.js'
 
@@ -189,8 +189,10 @@ export const useAuthStore = defineStore('auth', () => {
   )
 
   return {
-    // State object for atomic updates
-    state: readonly(state),
+    // State object for atomic updates. skipHydrate prevents pinia from
+    // attempting to write back into this readonly ref during SSR hydration
+    // (the computed views below are repopulated by init() on the client).
+    state: skipHydrate(readonly(state)),
 
     // Computed properties for convenience
     user: computed(() => state.value.user),
